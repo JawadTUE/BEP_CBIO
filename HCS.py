@@ -2,31 +2,37 @@ from random import choice
 from copy import deepcopy
 import numpy as np
 import matplotlib.pyplot as plt
+import networkx as nx
+from graph import Graph
 
 class HCS:
     """
     How to run:
         
     1. HCS_model = HCS(data_matrix, Graph())
-    2. sim_threshold = HCS_model.getMinSimilarity(fraction_threshold = 0.2) #optional step
+    2. sim_threshold = HCS_model.getSimilarityThreshold(fraction_threshold = 0.2) #optional step
     3. clusters = HCS_model.cluster(sim_threshold = sim_threshold)
     """
-    def __init__(self, data_matrix, graph):
+    def __init__(self, data_matrix, graph = None):
         """ 
         Initiate HCS model
         
         Parameters:
             data_matrix (numpy matrix): n x n symmetric matrix with ones on diagonal. 
                                         Each entry represents the similarity between 2 nodes. 
-            graph: (empty) Graph object
+            graph: Graph object: default None so Graph is created in __init__
 
         Returns:
             None
         """
         self.data_matrix = data_matrix
-        self.graph = graph #can be empty graph or graph with nodes and edges
+        
+        if graph:
+            self.graph = graph #start with given graph
+        else:
+            self.graph = Graph() #start with empty graph
     
-    def getMinSimilarity(self, fraction_threshold = 0.5):
+    def getSimilarityThreshold(self, fraction_threshold = 0.5):
         """ 
         Calculate similarity threshold based on the given fraction of total edges that should remain
         
@@ -40,7 +46,7 @@ class HCS:
         sim_threshold_values = np.arange(0,1.05,0.05) #test 20 similarity threholds between 0 and 1
         fraction_values = [] #values of f(s): fraction of total edges
         n = self.data_matrix.shape[0]
-        total = 0.5*n*(n-1) #maximum possible amount of edges in graph of n nodes
+        total = n*(n-1)/2 #maximum possible amount of edges in graph of n nodes
         
         #calculate f(s) for each s
         for s in sim_threshold_values:
@@ -111,7 +117,7 @@ class HCS:
         # only loop through bottomleft triangle of matrix since it is symmetrical
         for node1 in range(1,rows):
             for node2 in range(node1):
-                if self.data_matrix[node1,node2] >= self.min_similarity:
+                if self.data_matrix[node1,node2] >= self.sim_threshold:
                     self.graph.addEdge(node1,node2) 
 
     def hcs_clustering(self,graph):
@@ -206,6 +212,19 @@ class HCS:
 
         return graph_dic
 
+    def drawGraphs(self):
+        """
+        Plot the original graph and its clusters
 
+        Parameters:
+            None
 
+        Returns:
+            None
+        """
+        plt.figure()
+        nx.draw(nx.Graph(self.graph.graph_dic),with_labels=True)
 
+        for cluster in self.clusters:
+            plt.figure(figsize=(2, 2))
+            nx.draw(nx.Graph(cluster.graph_dic),with_labels=True)
