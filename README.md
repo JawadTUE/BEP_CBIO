@@ -1,15 +1,15 @@
 # BEP_CBIO
 
-## Overlap.py
+### Overlap.py
 This file contains the overlap algorithms. 
 The n2_overlap() function is just the brute force method used in testing.
 The remaining functions are part of the sweep line algorithm.
 
-## Graph.py
+### Graph.py
 Class to create a graph object. 
 
-## HCS.py
+### HCS.py
 Highly connected subgraph class.
 
-## main.ipynb
+### main.ipynb
 Notebook in which the above mentioned files are showcased.
