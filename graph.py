@@ -4,7 +4,7 @@ class Graph:
     Nodes are represented as integers in the keys of the graph dictionary
     Adjacent nodes are stored in the list of the values of the dictionary
     """
-    def __init__(self, graph_dic={}):
+    def __init__(self, graph_dic = None):
         """ 
         Initiate Graph class
         
@@ -15,9 +15,12 @@ class Graph:
         Returns:
             None
         """
-        self.graph_dic = graph_dic
+        if graph_dic:
+            self.graph_dic = graph_dic
+        else:
+            self.graph_dic = {}
 
-        self.nodes = list(self.graph_dic.keys()) #list of nodes 
+        self.nodes = set(self.graph_dic.keys()) #set of nodes 
 
         self.edges = [] #list of edges (edge = binary set)
         for u in self.nodes:
@@ -37,7 +40,26 @@ class Graph:
         """
         if node not in self.graph_dic:
             self.graph_dic[node] = []
-            self.nodes.append(node)
+            self.nodes.add(node)
+
+    def deleteNode(self,node):
+        """
+        Delete given node from graph dictionary, nodes set, edge list
+
+        Parameters:
+            node (int): node to delete
+
+        Returns:
+            None
+        """
+        self.nodes.remove(node) #delete from nodes
+
+        #find all edges that contain node
+        for adj_node in self.graph_dic[node]:
+            self.graph_dic[adj_node].remove(node)
+            self.edges.remove({node,adj_node})
+        
+        del self.graph_dic[node]
 
     def addEdge(self,node1,node2):
         """
@@ -72,7 +94,25 @@ class Graph:
         """
         n = len(self.nodes)
 
-        return (n == 1) or (minCut > n//2)
+        return minCut > n//2
+
+    def subgraph(self, nodes):
+        """
+        Create subgraph of current graph based on given set of nodes such that the subgraph contains only the given nodes and the edges belonging to those nodes
+
+        Parameters:
+            nodes (set of ints): nodes in the subgraph 
+
+        Returns:
+            1 Graph object
+        """
+        subgraph_dict = {}
+
+        for node in self.graph_dic:
+            if node in nodes: #subgraph 1 
+                subgraph_dict[node] = [adj_node for adj_node in self.graph_dic[node] if adj_node in nodes]
+        
+        return Graph(subgraph_dict)
     
     def cut(self, nodes1, nodes2):
         """

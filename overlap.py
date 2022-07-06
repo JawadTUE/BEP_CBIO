@@ -33,7 +33,7 @@ def sweepline_overlap(sublists):
     
     Parameters:
         sublists (list): list of k sublist of integers. Each sublist contains an even amount of integers.
-                       The sublists are ordered ascending. 
+                       The sublists are strictly ordered ascending. 
                        Each sublist contains start and end points (alternately) of regions
 
     Returns:
@@ -48,9 +48,9 @@ def sweepline_overlap(sublists):
     for i in range(k): 
         overlap_matrix[i,i] = len(sublists[i])//2
 
-    sweepline = {}
-
-    cursors = [0 for c in sublists] #index of cursors on each of the k sublists: initially all on start of lists
+    sweepline = set()
+ 
+    cursors = [0 for c in sublists] #index of cursors on each of the k sublists: initially all on start of lists (index 0)
     cursor_values = [l[cursors[i]] for i,l in enumerate(sublists)] #actual values of the k cursors
 
     i = 0
@@ -67,7 +67,7 @@ def sweepline_overlap(sublists):
                 for c in sweepline:
                     overlap_matrix[min_index,c] += 1
                     overlap_matrix[c,min_index] += 1
-                sweepline.append(min_index)
+                sweepline.add(min_index)
             else: #odd indexed points: end of region: remove from sweepline
                 sweepline.remove(min_index)
 
